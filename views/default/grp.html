@@ -1,11 +1,13 @@
 {{extend 'layout.html'}}
 
 <script src='/{{=request.application}}/static/js/Chart.bundle.min.js'></script>
+{{=form.custom.begin}}
 
-{{=form}}
 <span id='shadow_clone'></span>
-<button id="playbutton" class="btn btn-rien btn-xs" type="button" value="Play"><span class="icon icon-headphones"></span>{{=T('Draw me')}}</button>
-groupe:{{=groupid}}
+
+{{=form.custom.widget.serie}}
+{{=BUTTON( SPAN(_class="icon icon-headphones"),T('Draw me'), _id="playbutton", _class="btn btn-rien btn-xs" , _type="button" ,_value="Play")}}
+{{=form.custom.end}}
 <canvas id="myChart" width="400" height="400"></canvas>
 <script>
 playbutton.onclick=	function zyva(){

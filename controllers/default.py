@@ -62,7 +62,7 @@ def compo_change_serie():
     selected= serie_id.index('true')
     app_logging.info(selected)
     
-    return dict(laserie=series[selected])
+    return dict(serie_id=selected+1,laserie=series[selected])
 
 
 # ---- API (example) -----

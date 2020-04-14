@@ -1,1 +1,2 @@
 <input type="hidden" id="poloto" value={{=laserie}}>
+groupe : {{=serie_id}}
