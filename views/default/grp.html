@@ -1,0 +1,60 @@
+{{extend 'layout.html'}}
+
+<script src='/{{=request.application}}/static/js/Chart.bundle.min.js'></script>
+
+{{=form}}
+<span id='shadow_clone'></span>
+<button id="playbutton" class="btn btn-rien btn-xs" type="button" value="Play"><span class="icon icon-headphones"></span>{{=T('Draw me')}}</button>
+groupe:{{=groupid}}
+<canvas id="myChart" width="400" height="400"></canvas>
+<script>
+playbutton.onclick=	function zyva(){
+var titi=document.getElementById('poloto');
+//alert(titi.value);
+var ctx = document.getElementById('myChart');
+//var tito="1,2,20,30,10,20"
+var array = JSON.parse("[" + titi.value + "]");
+//alert(array);
+
+var myChart = new Chart(ctx, {
+  type: 'line',
+	data: {
+			  labels: [1,2,3,4,5,6],
+			  datasets: [
+						  {
+						    label: 'Low',
+						    data: array,
+						    borderColor: "#3e95cd", // green
+						    //pointBorderColor: "#fff",
+						    //backgroundColorHover: "#3e95cd",
+						    fill: true,
+						    borderDash: [2,4]
+						  },
+
+						  {
+						    label: 'high',
+						    data: [3,5,18,30,15,25],
+						    borderColor: "#8e5ea2",
+						    fill: false
+						  },
+
+						]
+			},
+
+	options:   {
+			  scales: {
+					    xAxes: [{ stacked: false }],
+					    yAxes: [{ stacked: false }]
+					  },
+
+				title: {
+					      display: true,
+					      text: 'World population per region (in millions)'
+					    },
+
+			}
+		}
+	);
+}
+
+</script>

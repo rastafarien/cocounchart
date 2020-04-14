@@ -1,0 +1,5 @@
+2020-04-14 15:40:39,211 INFO default.py 54 grp(): web2py_component("/cocounlive/default/compo_change_serie.load"+"/"+$("#serie1").prop("checked")+"/"+$("#serie2").prop("checked"),target="shadow_clone");
+2020-04-14 15:40:42,393 INFO default.py 63 compo_change_serie(): 1
+2020-04-14 15:40:52,003 INFO default.py 63 compo_change_serie(): 0
+2020-04-14 15:40:54,183 INFO default.py 63 compo_change_serie(): 1
+2020-04-14 15:40:56,203 INFO default.py 63 compo_change_serie(): 0
