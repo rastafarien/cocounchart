@@ -3,29 +3,79 @@
 <script src='/{{=request.application}}/static/js/Chart.bundle.min.js'></script>
 {{=form.custom.begin}}
 
+<span id='serie_ph'></span>
+<span id='refreshed_data_ph'></span>
+<span id='refresh_ph'></span>
+<span id='draw_ph'></span>
 <span id='shadow_clone'></span>
 
 {{=form.custom.widget.serie}}
+
+
+{{=BUTTON( SPAN(_class="icon icon-headphones"),T('Refresh data'), _id="refreshbutton", _class="btn btn-rien btn-xs" , _type="button" ,_value="Refresh",_onclick='web2py_component("%s",target="refresh_ph");' % URL("compo_refresh_repo.load")) }}
+
 {{=BUTTON( SPAN(_class="icon icon-headphones"),T('Draw me'), _id="playbutton", _class="btn btn-rien btn-xs" , _type="button" ,_value="Play")}}
+
+
+{{=BUTTON( SPAN(_class="icon icon-headphones"),T('Draw 4 me guy'), _id="drawbutton", _class="btn btn-rien btn-xs" , _type="button" ,_value="Refreshpopo",_onclick='var titi=document.getElementById("countries"); web2py_component("%s/"+titi.value,target="draw_ph");' % URL("compo_get_array_dataset.load")) }}
+
+
+{{=BUTTON( SPAN(_class="icon icon-headphones"),T('check data'), _id="refreshdatabutton", _class="btn btn-rien btn-xs" , _type="button" ,_value="Refresh",_onclick='web2py_component("%s",target="refreshed_data_ph");' % URL("compo_refreshed_data.load") ) }}
+
+{{=BUTTON( SPAN(_class="icon icon-headphones"),T('check country'), _id="refreshdatabuttondescountries", _class="btn btn-rien btn-xs" , _type="button" ,_value="Refreshde",_onclick="var titi=document.getElementById('countries'); alert(titi.value);") }}
+
+
 {{=form.custom.end}}
-<canvas id="myChart" width="400" height="400"></canvas>
+<canvas id="myChart"  style="width: 1000px !important height: 500px !important"  ></canvas>
 <script>
 playbutton.onclick=	function zyva(){
-var titi=document.getElementById('poloto');
+//web2py_component('compo_get_array_dataset');
+var x=document.getElementById('array_dataset0');
+var y=document.getElementById('array_dataset1');
 //alert(titi.value);
 var ctx = document.getElementById('myChart');
-//var tito="1,2,20,30,10,20"
-var array = JSON.parse("[" + titi.value + "]");
-//alert(array);
+// var tito="1,2,20,30,10,20"
+// convertit la chaine en tableau
+//alert(x.value);
+//alert(y.value);
 
+//var array_x = JSON.parse("[" + x.value + "]");
+//var array_x = "[" + x.value + "]";
+//alert(array_x);
+
+//var stephane = "1,2,3,4,5,6"
+//var stephane = y.value;
+//var array_y = JSON.parse("[" + stephane + "]");
+
+//var xs = "2017, 08, 16 ; 2017, 08, 17 ; 2017, 08, 18; 2017, 08, 19;2017, 08, 20";
+//alert(xs);
+var titi = x.value.split(';')
+//alert(titi)
+
+//var xa = titi.split(';')
+
+
+//var array_x =eval(xa);
+
+array_x = titi.map(date => new Date(date));
+//alert(array_x); 
+
+var array_y = JSON.parse("[" + y.value + "]");
+//var array_y = "[" + y.value + "]";
+//alert(array_y);
+//alert(array);
+//var bouboule=[0,1,3,5,7]
 var myChart = new Chart(ctx, {
   type: 'line',
 	data: {
-			  labels: [1,2,3,4,5,6],
+			  //labels: [new Date(2017, 08, 16),new Date(2017, 08, 17),new Date(2017, 08, 18),new Date(2017, 08, 19),new Date(2017, 08, 20)],
+			  labels: array_x,
 			  datasets: [
 						  {
 						    label: 'Low',
-						    data: array,
+						    //data:  [0,1,3,9,11],
+
+						    data:  array_y,
 						    borderColor: "#3e95cd", // green
 						    //pointBorderColor: "#fff",
 						    //backgroundColorHover: "#3e95cd",
@@ -33,19 +83,20 @@ var myChart = new Chart(ctx, {
 						    borderDash: [2,4]
 						  },
 
-						  {
-						    label: 'high',
-						    data: [3,5,18,30,15,25],
-						    borderColor: "#8e5ea2",
-						    fill: false
-						  },
+
 
 						]
 			},
 
 	options:   {
-			  scales: {
-					    xAxes: [{ stacked: false }],
+		    responsive: true,
+ 			maintainAspectRatio: true,
+			scales: {
+					    xAxes: [{ stacked: false , type: 'time' ,
+					    										time: {
+                    													unit: 'day'
+            														    }
+            					}],
 					    yAxes: [{ stacked: false }]
 					  },
 

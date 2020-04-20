@@ -1,2 +1,2 @@
-<input type="hidden" id="poloto" value={{=laserie}}>
+<input type="hidden" id="array_dataset" value={{=laserie}}>
 groupe : {{=serie_id}}

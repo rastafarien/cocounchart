@@ -1,0 +1,3 @@
+{{=pull_status}}<BR>
+{{=f'{country_count} countries'}}<BR>
+{{=XMLcon}}<BR>

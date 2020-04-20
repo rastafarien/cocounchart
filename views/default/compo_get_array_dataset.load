@@ -1,0 +1,6 @@
+HEELOOOL
+{{=selected_country}}<BR>
+{{=dataset[0]}}<BR>
+{{=dataset[1]}}<BR>
+<input type="hidden" id="array_dataset0" value={{=dataset[0]}}>
+<input type="hidden" id="array_dataset1" value={{=dataset[1]}}>
