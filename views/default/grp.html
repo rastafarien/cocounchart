@@ -9,26 +9,29 @@
 <span id='draw_ph'></span>
 <span id='shadow_clone'></span>
 
-{{=form.custom.widget.serie}}
+{{#form.custom.widget.serie}}
 
 
 {{=BUTTON( SPAN(_class="icon icon-headphones"),T('Refresh data'), _id="refreshbutton", _class="btn btn-rien btn-xs" , _type="button" ,_value="Refresh",_onclick='web2py_component("%s",target="refresh_ph");' % URL("compo_refresh_repo.load")) }}
 
-{{=BUTTON( SPAN(_class="icon icon-headphones"),T('Draw me'), _id="playbutton", _class="btn btn-rien btn-xs" , _type="button" ,_value="Play")}}
+{{#BUTTON( SPAN(_class="icon icon-headphones"),T('Draw me'), _id="playbutton", _class="btn btn-rien btn-xs" , _type="button" ,_value="Play")}}
 
 
-{{=BUTTON( SPAN(_class="icon icon-headphones"),T('Draw 4 me guy'), _id="drawbutton", _class="btn btn-rien btn-xs" , _type="button" ,_value="Refreshpopo",_onclick='var titi=document.getElementById("countries"); web2py_component("%s/"+titi.value,target="draw_ph");' % URL("compo_get_array_dataset.load")) }}
+{{#BUTTON( SPAN(_class="icon icon-headphones"),T('New Draw me'), _id="playbuttonhidden", _class="btn btn-rien btn-xs" , _type="button" ,_value="Play",_onclick='var tot=document.getElementById("array_dataset0");tot.remove();var tot=document.getElementById("array_dataset1");tot.remove();zyva();')}}
+
+{{#BUTTON( SPAN(_class="icon icon-headphones"),T('Draw 4 me guy'), _id="drawbutton", _class="btn btn-rien btn-xs" , _type="button" ,_value="Refreshpopo",_onclick='var tot=document.getElementById("array_dataset0");tot.remove();var tot=document.getElementById("array_dataset1");tot.remove(); var titi=document.getElementById("countries"); web2py_component("%s/"+titi.value,target="draw_ph");' % URL("compo_get_array_dataset.load")) }}
 
 
-{{=BUTTON( SPAN(_class="icon icon-headphones"),T('check data'), _id="refreshdatabutton", _class="btn btn-rien btn-xs" , _type="button" ,_value="Refresh",_onclick='web2py_component("%s",target="refreshed_data_ph");' % URL("compo_refreshed_data.load") ) }}
+{{#BUTTON( SPAN(_class="icon icon-headphones"),T('check data'), _id="refreshdatabutton", _class="btn btn-rien btn-xs" , _type="button" ,_value="Refresh",_onclick='web2py_component("%s",target="refreshed_data_ph");' % URL("compo_refreshed_data.load") ) }}
 
-{{=BUTTON( SPAN(_class="icon icon-headphones"),T('check country'), _id="refreshdatabuttondescountries", _class="btn btn-rien btn-xs" , _type="button" ,_value="Refreshde",_onclick="var titi=document.getElementById('countries'); alert(titi.value);") }}
+{{#BUTTON( SPAN(_class="icon icon-headphones"),T('check country'), _id="refreshdatabuttondescountries", _class="btn btn-rien btn-xs" , _type="button" ,_value="Refreshde",_onclick="var titi=document.getElementById('countries'); alert(titi.value);") }}
 
 
 {{=form.custom.end}}
 <canvas id="myChart"  style="width: 1000px !important height: 500px !important"  ></canvas>
 <script>
-playbutton.onclick=	function zyva(){
+//playbutton.onclick=	function zyva(){
+function zyva(){	
 //web2py_component('compo_get_array_dataset');
 var x=document.getElementById('array_dataset0');
 var y=document.getElementById('array_dataset1');

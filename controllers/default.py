@@ -82,11 +82,10 @@ def compo_refresh_repo():
 
     #global column_list_str
     column_list_str=str(columns).replace('[','').replace(']','')
-    session.column_list_str=str(columns[4:]).replace('[','').replace(']','').replace(' ','') # on memorise une verson sans les 4 premiers champs    
+    session.column_list_str=str(columns[4:]).replace('[','').replace(']','').replace(' ','').replace(",",";").replace("'","").replace('/',',') # on memorise une version sans les 4 premiers champs    
     #column_list_str=str(columns).replace('[','').replace(']','') 
     #app_logging.info("global : %s" % column_list_str['content'])
- 
-
+    
     # pas besoin des noms de colonnes
     cur.execute("CREATE TABLE t (%s);" % column_list_str)
         
@@ -119,7 +118,9 @@ def compo_refresh_repo():
     #countries=db_select_countries(cur)
 
     # countries : donner un nom du combo pour recuperer sa valeur dans le DOM!
-    flux_retour="""<select id='countries' onchange='var titi=document.getElementById("countries"); web2py_component("%s/"+titi.value,target="draw_ph");' > """ % URL("compo_get_array_dataset.load")
+    # il faut supprimer les champs cachés car s'ils ont été créés par la procédure d'import
+    # les nouveaux créés par la requete pays s'ajoutent et on n'a que le pays par défaut
+    flux_retour="""<select id='countries' onchange='var tot=document.getElementById("array_dataset0");tot.remove();var tot=document.getElementById("array_dataset1");tot.remove();var titi=document.getElementById("countries"); web2py_component("%s/"+titi.value,target="draw_ph");' > """ % URL("compo_get_array_dataset.load")
     ic=0
     for c in countries:
         # selected = valeur de theme préselectionnée dans la combo. option du tag select
@@ -143,10 +144,11 @@ def db_select_countries():
     # app_logging.info(str(x))
     return [c[0] for c in x]
 
-def db_select_values(location,lt='c'):
+def db_select_values(loc,lt='c'):
     # recupere les valeurs d'un pays ou d'une region
     con = sqlite3.connect("bimbamboum")
     cur = con.cursor()
+    location=loc.replace("'","''")
     if lt=='c':
         cur=con.execute(f"select * from t where Country ='{location}' and Province='' ")
     else:
@@ -154,39 +156,42 @@ def db_select_values(location,lt='c'):
 
     # ignore les 4 premieres colonnes    
     res=list(cur.fetchmany()[0])[4:]
-    app_logging.info("res=%s"%res)
 
-    return res
+    # nettoie.
+    values=str([int(s) for s in res]).replace("]","").replace("[","").replace(' ','')
+
+    return values
 
     
 
 def compo_get_array_dataset():
     # envoie les données pour le pays selectionné
-    global countries
-    
-    selected_country_id=int(request.args[0])
+    #global countries
+    app_logging.info("len %s"%len(request.args))
+    selected_country_id=int(request.args[0]) if len(request.args) else session.countries.index(DEFAULT_COUNTRY)
+    app_logging.info("selected_country %s"%selected_country_id)
 
     #countries=db_select_countries()
     selected_country=session.countries[selected_country_id]
+    
     # graph datas
-    series=db_select_values(selected_country,'c')
+    xdataset=session.column_list_str
+    ydataset=db_select_values(selected_country,'c')
     #=["1,2,20,30,10,20","1,2,4,5,7,10"]
     # passe de '2','3',.. a '2,3,4..'
     
-    xdataset=session.column_list_str
-
-    app_logging.info("xda=%s"%type(xdataset))
-    xdattr=xdataset.replace(",",";").replace("'","").replace('/',',')
-    app_logging.info("xda TR=%s"% xdattr)
+    #app_logging.info("xda=%s"%type(xdataset))
     
-    ydataset=str([int(s) for s in series]).replace("]","").replace("[","").replace(' ','')
+    #app_logging.info("xda TR=%s"% xdattr)
+    
+    #ydataset=str([int(s) for s in series]).replace("]","").replace("[","").replace(' ','')
     #xdataset="'1/2/20','1/3/20','1/4/20','1/5/20','1/6/20','1/7/20'"
     #moment("12/25/1995", "MM-DD-YYYY");
     #new Date(2017, 08, 16)
     #xdataset="'1/22/20','1/23/20','1/24/20','1/25/20','1/26/20','1/27/20'"
-    xdataset="2017,08,16;2017,08,17;2017,08,18;2017,08,19;2017,08,20"
-    xdataset="1,22,20;1,23,20;1,24,20;1,25,20;1,26,20"
-    xdataset=xdattr
+    # xdataset="2017,08,16;2017,08,17;2017,08,18;2017,08,19;2017,08,20"
+    # xdataset="1,22,20;1,23,20;1,24,20;1,25,20;1,26,20"
+    #xdataset=xdattr
     #ydataset="1,2,4,5,7,10"
     #ydataset="0,1,3,5,7"
     return dict(selected_country=selected_country,dataset=(xdataset,ydataset))

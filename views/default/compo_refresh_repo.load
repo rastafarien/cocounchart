@@ -1,3 +1,8 @@
 {{=pull_status}}<BR>
 {{=f'{country_count} countries'}}<BR>
 {{=XMLcon}}<BR>
+
+{{# apres la refresh de la db, faire la requete pour le pays par défaut}}
+{{=LOAD('default', 'compo_get_array_dataset.load', ajax=True)}}
+
+
