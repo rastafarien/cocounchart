@@ -24,10 +24,15 @@
 
 {{#BUTTON( SPAN(_class="icon icon-headphones"),T('check data'), _id="refreshdatabutton", _class="btn btn-rien btn-xs" , _type="button" ,_value="Refresh",_onclick='web2py_component("%s",target="refreshed_data_ph");' % URL("compo_refreshed_data.load") ) }}
 
-{{#BUTTON( SPAN(_class="icon icon-headphones"),T('check country'), _id="refreshdatabuttondescountries", _class="btn btn-rien btn-xs" , _type="button" ,_value="Refreshde",_onclick="var titi=document.getElementById('countries'); alert(titi.value);") }}
+{{#BUTTON( SPAN(_class="icon icon-headphones"),T('check country'), _id="refreshdatabuttondescountries", _class="btn btn-rien btn-xs" , _type="button" ,_value="Refreshde",_onclick="var titi=document.getElementById('scountry'); alert(titi.value);") }}
+
+{{#BUTTON( SPAN(_class="icon icon-headphones"),T('Add country'), _id="addcountry", _class="btn btn-rien btn-xs" , _type="button" ,_value="addC",_onclick="var titi=document.getElementById('countries'); alert(titi.value);") }}
+
 
 
 {{=form.custom.end}}
+
+
 <canvas id="myChart"  style="width: 1000px !important height: 500px !important"  ></canvas>
 <script>
 //playbutton.onclick=	function zyva(){
@@ -57,7 +62,8 @@ var titi = x.value.split(';')
 
 //var xa = titi.split(';')
 
-
+var country = document.getElementById('scountry').value;
+//alert(country);
 //var array_x =eval(xa);
 
 array_x = titi.map(date => new Date(date));
@@ -80,7 +86,7 @@ window.myCharts = new Chart(ctx, {
 			  labels: array_x,
 			  datasets: [
 						  {
-						    label: 'Low',
+						    label: country,
 						    //data:  [0,1,3,9,11],
 
 						    data:  array_y,

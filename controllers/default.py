@@ -120,7 +120,12 @@ def compo_refresh_repo():
     # countries : donner un nom du combo pour recuperer sa valeur dans le DOM!
     # il faut supprimer les champs cachés car s'ils ont été créés par la procédure d'import
     # les nouveaux créés par la requete pays s'ajoutent et on n'a que le pays par défaut
-    flux_retour="""<select id='countries' onchange='var tot=document.getElementById("array_dataset0");tot.remove();var tot=document.getElementById("array_dataset1");tot.remove();var titi=document.getElementById("countries"); web2py_component("%s/"+titi.value,target="draw_ph");' > """ % URL("compo_get_array_dataset.load")
+    fieds_to_remove=['array_dataset0','array_dataset1','scountry']
+
+    jscleanup=';'.join(['var fieldObject=document.getElementById("%s");fieldObject.remove()' % f for f in fieds_to_remove])
+    app_logging.info(jscleanup)
+    flux_retour="""<select id='countries' onchange=' %s ; var scountry=document.getElementById("countries");  web2py_component("%s/"+scountry.value,target="draw_ph")' > """ % (jscleanup, URL("compo_get_array_dataset.load"))
+    app_logging.info(flux_retour)
     ic=0
     for c in countries:
         # selected = valeur de theme préselectionnée dans la combo. option du tag select
@@ -173,7 +178,8 @@ def compo_get_array_dataset():
 
     #countries=db_select_countries()
     selected_country=session.countries[selected_country_id]
-    
+    app_logging.info("selected_country reel %s"%selected_country)
+
     # graph datas
     xdataset=session.column_list_str
     ydataset=db_select_values(selected_country,'c')

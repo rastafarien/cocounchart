@@ -1,5 +1,6 @@
 <input type="hidden" id="array_dataset0" value={{=dataset[0]}}>
 <input type="hidden" id="array_dataset1" value={{=dataset[1]}}>
+<input type="hidden" id="scountry" value="{{=selected_country}}">
 <SCRIPT>
 zyva();
 </SCRIPT>
