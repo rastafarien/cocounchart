@@ -65,10 +65,15 @@ array_x = titi.map(date => new Date(date));
 
 var array_y = JSON.parse("[" + y.value + "]");
 //var array_y = "[" + y.value + "]";
-//alert(array_y);
-//alert(array);
-//var bouboule=[0,1,3,5,7]
-var myChart = new Chart(ctx, {
+
+
+// indispensable hack.
+// evite les anciens graphiques d'apparaitre en passant la souris
+// on tue le graphique existant avant d'en creer un nouveau. 
+if(window.myCharts != undefined)
+window.myCharts.destroy();
+window.myCharts = new Chart(ctx, {
+//var myChart = new Chart(ctx, {
   type: 'line',
 	data: {
 			  //labels: [new Date(2017, 08, 16),new Date(2017, 08, 17),new Date(2017, 08, 18),new Date(2017, 08, 19),new Date(2017, 08, 20)],
