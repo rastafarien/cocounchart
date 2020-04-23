@@ -1,6 +1,88 @@
-<input type="hidden" id="array_dataset0" value={{=dataset[0]}}>
-<input type="hidden" id="array_dataset1" value={{=dataset[1]}}>
-<input type="hidden" id="scountry" value="{{=selected_country}}">
-<SCRIPT>
+
+{{=dataset[0] }} 
+{{=dataset[1] }}
+
+{{
+
+	#labels='1/3/20','1/4/20','1/5/20','1/6/20','1/7/20'
+	labels= dataset[0]
+	datasets="""
+
+						  {
+						    label: country,
+						    //data:  [0,1,3,9,11],
+
+						    data:  array_y,
+						    borderColor: "#3e95cd", // green
+						    //pointBorderColor: "#fff",
+						    //backgroundColorHover: "#3e95cd",
+						    fill: true,
+						    borderDash: [2,4]
+						  },
+"""
+}}
+
+<canvas id="myChart"  style="width: 1000px !important height: 500px !important"  ></canvas>
+
+
+<script>
+// script de génération des graphiques
+// déplacé ici pour faciliter la récupération des données d'entrées depuis le controleur
+
 zyva();
-</SCRIPT>
+
+//
+function zyva(){	
+
+// valeur venant du controleur : on les copies telles quelles
+var x="{{=dataset[0]}}";
+var y="{{=dataset[1]}}";
+var country = "{{=selected_country}}"
+
+// valeur du DOM : get by ID
+var ctx = document.getElementById('myChart');
+
+// retraite
+var array_x = x.split(';').map(date => new Date(date));
+var array_y = JSON.parse("[" + y + "]");
+
+// indispensable hack.
+// evite les anciens graphiques d'apparaitre en passant la souris
+// on tue le graphique existant avant d'en creer un nouveau. 
+if(window.myCharts != undefined)
+window.myCharts.destroy();
+window.myCharts = new Chart(ctx, {
+  type: 'line',
+	data: {
+			  //labels: array_x,
+			  labels: 	{{=XML(labels)}},
+			  datasets: [
+			  //datasets généres en dehors
+			  {{=XML(datasets)}}
+			  			],
+						
+			},
+
+	options:   {
+		    responsive: true,
+ 			maintainAspectRatio: true,
+			scales: {
+					    xAxes: [{ stacked: false , type: 'time' ,
+					    										time: {
+                    													unit: 'day'
+            														    }
+            					}],
+					    yAxes: [{ stacked: false }]
+					  },
+
+				title: {
+					      display: true,
+					      text: 'World population per region (in millions)'
+					    },
+
+			}
+		}
+	);
+}
+
+</script>

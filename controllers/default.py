@@ -80,18 +80,14 @@ def compo_refresh_repo():
     vals=f'({("?,"*ncol)[:-1]})'
 
 
-    #global column_list_str
+    # column_list_str : cleaner
+    app_logging.info(str(columns))
     column_list_str=str(columns).replace('[','').replace(']','')
-    session.column_list_str=str(columns[4:]).replace('[','').replace(']','').replace(' ','').replace(",",";").replace("'","").replace('/',',') # on memorise une version sans les 4 premiers champs    
-    #column_list_str=str(columns).replace('[','').replace(']','') 
-    #app_logging.info("global : %s" % column_list_str['content'])
+    #session.column_list_str=str(columns[4:]).replace('[','').replace(']','').replace(' ','').replace(",",";").replace("'","").replace('/',',') # on memorise une version sans les 4 premiers champs    
+    session.column_list_str=str(columns[4:])
     
     # pas besoin des noms de colonnes
     cur.execute("CREATE TABLE t (%s);" % column_list_str)
-        
-    # app_logging.info('Table does not exists.')
-    
-    #cur.execute("CREATE TABLE t ('Province', 'Country');") # use your column names here
     # parse le fichier dans une liste de dictionnaires. 1 distionnaire = 1 ligne
     with open(input_file,'r') as fin: # `with` statement available in 2.5+
         # csv.DictReader uses first line in file for column headings by default
@@ -117,15 +113,17 @@ def compo_refresh_repo():
     # combo countries : important : donner un nom à la combo pour recuperer sa valeur dans le DOM!
     # il faut supprimer les champs cachés car s'ils ont été créés par la procédure d'import
     # les nouveaux créés par la requete pays s'ajoutent et on n'a que le pays par défaut
-    fieds_to_remove=['array_dataset0','array_dataset1','scountry']
-    jscleanup=';'.join(['var fieldObject=document.getElementById("%s");fieldObject.remove()' % f for f in fieds_to_remove])
+    # PLUS BESOIN mais conservé pour mémoire
+    #fieds_to_remove=['array_dataset0','array_dataset1','scountry']
+    #jscleanup=';'.join(['var fieldObject=document.getElementById("%s");fieldObject.remove()' % f for f in fieds_to_remove])
+    jscleanup = '' # pas de cleanup nécessaire 
     #    
-    # tout commence là   :    chgt de pays ds la combo 
+    # tout commence là   :    chgt de pays ds la combo. On recupere l'id du nouveau pays selectionné.
     #
     on_change=' %s ; var scountry=document.getElementById("countries");  web2py_component("%s/"+scountry.value,target="draw_ph")' % (jscleanup, URL("compo_get_array_dataset.load"))
     flux_retour=f"<select id='countries' onchange='{on_change}'"
 
-    app_logging.info(flux_retour)
+    # ic : index pour le pays dans la liste
     ic=0
     for c in countries:
         # selected = valeur de theme préselectionnée dans la combo. option du tag select

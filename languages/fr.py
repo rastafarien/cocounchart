@@ -28,6 +28,7 @@
 'A new password was emailed to you': 'A new password was emailed to you',
 'About': 'À propos',
 'Access Control': "Contrôle d'accès",
+'Add country': 'Add country',
 'admin': 'admin',
 'Ajax Recipes': 'Recettes Ajax',
 'An error occured, please [[reload %s]] the page': 'An error occured, please [[reload %s]] the page',
