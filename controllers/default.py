@@ -104,27 +104,27 @@ def compo_refresh_repo():
     con.commit()
     #country_values=cache.ram('country_values',lambda: dict([(x[1],x[4:]) for x in cur.execute('select * from t ' )]))
     #app_logging.info("creation for france: %s" % str(country_values['France']))
-
-    #countriesl=cache.ram('countriesl',lambda: countries)
-    #competitors=cache.ram('competitors', lambda: dict([(x.id,x.first_name.title()) for x in db(db.auth_user).select(db.auth_user.id, db.auth_user.first_name)]), time_expire=60*60)
-    #competitors=cache.ram('country_values', lambda: dict([(x[0],x[1] for x in db(db.auth_user).select(db.auth_user.id, db.auth_user.first_name)]), time_expire=60*60)
+    #
     # database is loaded
+    # memorise la liste des pays en env
     cur=con.execute("SELECT Country FROM t WHERE Province='' ")
     x=cur.fetchall()
     countries=[c[0] for c in x]
     session.countries=countries
-    #app_logging.info("creation : %s" % countries)
+    #
     # creer la combo de selection du pays
-    #countries=db_select_countries(cur)
-
-    # countries : donner un nom du combo pour recuperer sa valeur dans le DOM!
+    # 
+    # combo countries : important : donner un nom à la combo pour recuperer sa valeur dans le DOM!
     # il faut supprimer les champs cachés car s'ils ont été créés par la procédure d'import
     # les nouveaux créés par la requete pays s'ajoutent et on n'a que le pays par défaut
     fieds_to_remove=['array_dataset0','array_dataset1','scountry']
-
     jscleanup=';'.join(['var fieldObject=document.getElementById("%s");fieldObject.remove()' % f for f in fieds_to_remove])
-    app_logging.info(jscleanup)
-    flux_retour="""<select id='countries' onchange=' %s ; var scountry=document.getElementById("countries");  web2py_component("%s/"+scountry.value,target="draw_ph")' > """ % (jscleanup, URL("compo_get_array_dataset.load"))
+    #    
+    # tout commence là   :    chgt de pays ds la combo 
+    #
+    on_change=' %s ; var scountry=document.getElementById("countries");  web2py_component("%s/"+scountry.value,target="draw_ph")' % (jscleanup, URL("compo_get_array_dataset.load"))
+    flux_retour=f"<select id='countries' onchange='{on_change}'"
+
     app_logging.info(flux_retour)
     ic=0
     for c in countries:
@@ -167,7 +167,12 @@ def db_select_values(loc,lt='c'):
 
     return values
 
-    
+def compo_add_country(): 
+    # ajoute un pays a la liste
+
+    sc=int(request.args[0])
+    app_logging.info("selected_country id %s"%sc)
+    return session.countries[sc]
 
 def compo_get_array_dataset():
     # envoie les données pour le pays selectionné
@@ -178,7 +183,7 @@ def compo_get_array_dataset():
 
     #countries=db_select_countries()
     selected_country=session.countries[selected_country_id]
-    app_logging.info("selected_country reel %s"%selected_country)
+    
 
     # graph datas
     xdataset=session.column_list_str

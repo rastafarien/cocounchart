@@ -7,6 +7,8 @@
 <span id='refreshed_data_ph'></span>
 <span id='refresh_ph'></span>
 <span id='draw_ph'></span>
+
+<span id='curselecoun_ph'></span>
 <span id='shadow_clone'></span>
 
 {{#form.custom.widget.serie}}
@@ -26,11 +28,11 @@
 
 {{#BUTTON( SPAN(_class="icon icon-headphones"),T('check country'), _id="refreshdatabuttondescountries", _class="btn btn-rien btn-xs" , _type="button" ,_value="Refreshde",_onclick="var titi=document.getElementById('scountry'); alert(titi.value);") }}
 
-{{#BUTTON( SPAN(_class="icon icon-headphones"),T('Add country'), _id="addcountry", _class="btn btn-rien btn-xs" , _type="button" ,_value="addC",_onclick="var titi=document.getElementById('countries'); alert(titi.value);") }}
+{{=BUTTON( SPAN(_class="icon icon-headphones"),T('Add country'), _id="addcountry", _class="btn btn-rien btn-xs" , _type="button" ,_value="addC",_onclick="var country=document.getElementById('countries'); web2py_component('%s/'+country.value,target='curselecoun_ph')" %   URL("compo_add_country.load")     ) }}
 
 
 
-{{=form.custom.end}}
+{{=form.custom.end}}	
 
 
 <canvas id="myChart"  style="width: 1000px !important height: 500px !important"  ></canvas>
