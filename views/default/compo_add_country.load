@@ -1,1 +1,4 @@
-{{='Added {country}' }}
+je ne comprends pas ce que je fais la 
+{{=session.countries_id}}
+
+{{=LOAD('default', 'compo_get_array_dataset.load','53', ajax=True)}}

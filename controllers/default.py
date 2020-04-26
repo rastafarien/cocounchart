@@ -16,6 +16,7 @@ column_list_str={}
 countries=[]
 kriko=1
 country_values={}
+#session.countries_id=[]
 
 
 def _init_log():
@@ -53,7 +54,19 @@ def compo_refresh_repo():
     path_list=[x for x in application_path if application in x]
     path_final=f'{path_list[0]}/static/data/'
     timestamp=datetime.datetime.now().strftime("%A, %d. %B %Y @ %H:%M:%S")
-    pull_status=f'refreshed on {timestamp}: {git.Git(path_final).pull()}'
+    try:
+        pull_status_raw=git.Git(path_final).pull()
+    except:
+        message=f"<BR>Refresh failed on {timestamp}"
+        if "pull_status_raw" in locals():
+             pull_status_raw+=message
+        else:
+            pull_status_raw=message
+    
+    # a revoir si on veut garder la date du dernier refresh successfull
+    # parser dans des DIV différentes success et failure
+
+    pull_status=f'Last successful refresh was recorded on {timestamp}: {pull_status_raw} <BR>'
 
     # reload database
 
@@ -107,6 +120,10 @@ def compo_refresh_repo():
     x=cur.fetchall()
     countries=[c[0] for c in x]
     session.countries=countries
+
+    # reset current country list for charts 
+    session.countries_id=[session.countries.index(DEFAULT_COUNTRY)]
+    app_logging.info(session.countries_id)
     #
     # creer la combo de selection du pays
     # 
@@ -136,7 +153,7 @@ def compo_refresh_repo():
     XMLcon=XML(flux_retour)
     # met à dispo de la communauté la liste des pays
 
-    return dict(pull_status=pull_status,country_count=len(countries),XMLcon=XMLcon)
+    return dict(pull_status=XML(pull_status),country_count=len(countries),XMLcon=XMLcon)
 
 def db_select_countries():
     # recupere de la base la liste des pays
@@ -147,49 +164,89 @@ def db_select_countries():
     # app_logging.info(str(x))
     return [c[0] for c in x]
 
-def db_select_values(loc,lt='c'):
+def db_select_values(loc,lt='sc'):
     # recupere les valeurs d'un pays ou d'une region
     con = sqlite3.connect("bimbamboum")
     cur = con.cursor()
-    location=loc.replace("'","''")
+    
     if lt=='c':
+        location=loc.replace("'","''")
         cur=con.execute(f"select * from t where Country ='{location}' and Province='' ")
-    else:
+    elif lt=='p':
+        location=loc.replace("'","''")
         cur=con.execute(f"select * from t where Province='{location}' ")
+    elif lt== 'mc':
+        app_logging.info("**** session.countries_id %s" % session.countries_id)
+        app_logging.info("**** session.countries %s" % session.countries[1:4])
+
+        #countries_clause=" or Country='".join([session.countries[x] for x in session.countries_id])
+        countries_clause=" or Country='".join([session.countries[x]+"'" for x in loc])
+        app_logging.info("CC %s" % countries_clause)
+        cur=con.execute(f"select * from t where Country='{countries_clause} and Province='' ")
+    elif lt=='mp':
+        pass
+    else:
+        return 'Error'
 
     # ignore les 4 premieres colonnes    
-    res=list(cur.fetchmany()[0])[4:]
+    rs= [ x[4:] for x in cur.fetchall() ]
+    app_logging.info('rs: %s'%rs)
 
-    # nettoie.
-    values=str([int(s) for s in res]).replace("]","").replace("[","").replace(' ','')
 
-    return values
+    res=[]
+    for f in rs:
+        #print (res)
+        e=[]
+        for g in f:
+            #print (g)
+            e.append(int(g))
+        #print (e)
+        # nettoie.
+        t=str(e).replace("]","").replace("[","").replace(' ','').replace("'","")
+
+        res.append(t)
+
+
+    #values=str([int(s) for s in res]).replace("]","").replace("[","").replace(' ','')
+    app_logging.info('res: %s'%len(res))
+    return res
 
 def compo_add_country(): 
     # ajoute un pays a la liste
 
     sc=int(request.args[0])
-    app_logging.info("selected_country id %s"%sc)
-    return session.countries[sc]
+    sc_name=session.countries[sc]
+
+    # si pas deja present
+    if sc not in session.countries_id: session.countries_id.append(sc)
+
+    return dict(sc=sc)
 
 def compo_get_array_dataset():
     # envoie les données pour le pays selectionné
-    #global countries
-    app_logging.info("len %s"%len(request.args))
-    selected_country_id=int(request.args[0]) if len(request.args) else session.countries.index(DEFAULT_COUNTRY)
-    app_logging.info("selected_country %s"%selected_country_id)
+    # global countries
+    # app_logging.info("len %s"%len(request.args))
+
+    app_logging.info("en entree session.selected_coutries *** %s" % session.selected_countries_id)
+    sc=int(request.args[0]) if len(request.args) else session.countries.index(DEFAULT_COUNTRY)
+    if session.selected_coutries_id is None: session.selected_countries_id=[sc]
+
+
+
+    app_logging.info("selected_country %s"%sc)
 
     #countries=db_select_countries()
-    selected_country=session.countries[selected_country_id]
+    #selected_country=session.countries[selected_country_id
     
 
     # graph datas
     xdataset=session.column_list_str
-    ydataset=db_select_values(selected_country,'c')
+    app_logging.info("session.selected_coutries *** %s" % session.selected_countries_id)
+    ydataset=db_select_values(session.selected_countries_id,'mc')
     #=["1,2,20,30,10,20","1,2,4,5,7,10"]
     # passe de '2','3',.. a '2,3,4..'
     
-    #app_logging.info("xda=%s"%type(xdataset))
+    app_logging.info("Yda=%s"%ydataset)
     
     #app_logging.info("xda TR=%s"% xdattr)
     
@@ -203,7 +260,7 @@ def compo_get_array_dataset():
     #xdataset=xdattr
     #ydataset="1,2,4,5,7,10"
     #ydataset="0,1,3,5,7"
-    return dict(selected_country=selected_country,dataset=(xdataset,ydataset))
+    return dict(selected_country="Italy",dataset=(xdataset,ydataset))
 
 def compo_refreshed_data():
     # refresh datas with git pull

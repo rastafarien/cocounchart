@@ -1,20 +1,23 @@
 {{extend 'layout.html'}}
 
 <script src='/{{=request.application}}/static/js/Chart.bundle.min.js'></script>
+
+{{=BUTTON( SPAN(_class="icon icon-headphones"),T('Refresh data'), _id="refreshbutton", _class="btn btn-rien btn-xs" , _type="button" ,_value="Refresh",_onclick='web2py_component("%s",target="refresh_ph");' % URL("compo_refresh_repo.load")) }}
+
+{{=BUTTON( SPAN(_class="icon icon-headphones"),T('Add country'), _id="addcountry", _class="btn btn-rien btn-xs" , _type="button" ,_value="addC",_onclick="var country=document.getElementById('countries'); web2py_component('%s/'+country.value,target='curselecoun_ph')" %   URL("compo_add_country.load")     ) }}
+
 {{=form.custom.begin}}
 
-<span id='serie_ph'></span>
-<span id='refreshed_data_ph'></span>
 <span id='refresh_ph'></span>
+
 <span id='draw_ph'></span>
 
-<span id='curselecoun_ph'></span>
+
 <span id='shadow_clone'></span>
 
 {{#form.custom.widget.serie}}
 
 
-{{=BUTTON( SPAN(_class="icon icon-headphones"),T('Refresh data'), _id="refreshbutton", _class="btn btn-rien btn-xs" , _type="button" ,_value="Refresh",_onclick='web2py_component("%s",target="refresh_ph");' % URL("compo_refresh_repo.load")) }}
 
 {{#BUTTON( SPAN(_class="icon icon-headphones"),T('Draw me'), _id="playbutton", _class="btn btn-rien btn-xs" , _type="button" ,_value="Play")}}
 
@@ -28,11 +31,12 @@
 
 {{#BUTTON( SPAN(_class="icon icon-headphones"),T('check country'), _id="refreshdatabuttondescountries", _class="btn btn-rien btn-xs" , _type="button" ,_value="Refreshde",_onclick="var titi=document.getElementById('scountry'); alert(titi.value);") }}
 
-{{=BUTTON( SPAN(_class="icon icon-headphones"),T('Add country'), _id="addcountry", _class="btn btn-rien btn-xs" , _type="button" ,_value="addC",_onclick="var country=document.getElementById('countries'); web2py_component('%s/'+country.value,target='curselecoun_ph')" %   URL("compo_add_country.load")     ) }}
+
 
 
 
 {{=form.custom.end}}	
 
+<canvas id="myChart"  style="width: 1000px !important height: 500px !important"  ></canvas>
 
 
