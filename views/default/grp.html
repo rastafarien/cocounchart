@@ -4,18 +4,20 @@
 
 {{=BUTTON( SPAN(_class="icon icon-headphones"),T('Refresh data'), _id="refreshbutton", _class="btn btn-rien btn-xs" , _type="button" ,_value="Refresh",_onclick='web2py_component("%s",target="refresh_ph");' % URL("compo_refresh_repo.load")) }}
 
-{{=BUTTON( SPAN(_class="icon icon-headphones"),T('Add country'), _id="addcountry", _class="btn btn-rien btn-xs" , _type="button" ,_value="addC",_onclick="var country=document.getElementById('countries'); web2py_component('%s/'+country.value,target='curselecoun_ph')" %   URL("compo_add_country.load")     ) }}
+
 
 {{=form.custom.begin}}
 
 <span id='refresh_ph'></span>
 
 <span id='draw_ph'></span>
+{{=BUTTON( SPAN(_class="icon icon-headphones"),T('Add country'), _id="addcountry", _class="btn btn-rien btn-xs" , _type="button" ,_value="addC",_onclick="var country=document.getElementById('countries'); web2py_component('%s/'+country.value,target='curselecoun_ph')" %   URL("compo_add_country.load")     ) }}
+
+
+{{=BUTTON( SPAN(_class="icon icon-headphones"),T('Del country'), _id="delcountry", _class="btn btn-rien btn-xs" , _type="button" ,_value="delC",_onclick="web2py_component('%s',target='curselecoun_ph')" %   URL("compo_del_country.load")     ) }}
 
 
 <span id='shadow_clone'></span>
-
-{{#form.custom.widget.serie}}
 
 
 

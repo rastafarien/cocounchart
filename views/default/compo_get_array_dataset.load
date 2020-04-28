@@ -1,35 +1,38 @@
 
 <span id='curselecoun_ph'></span>
-{{=dataset[1]}}
 {{
-	selected_country='-'.join([session.countries[x] for x in session.countries_id])
+	colors=['#FF7F50','#0000FF','#DC143C','#9932CC','#FFD700','#7FFFD4','#7FFF00','#FF1493','#8B4513','#40E0D0','#1E90FF']
+	colorset=10*colors
+	selected_country='-'.join(selected_countries)
 
 	#labels='1/3/20','1/4/20','1/5/20','1/6/20','1/7/20'
 	labels= dataset[0]
+	
+	# inverse les pays
+	rcountries=selected_countries[::-1].copy()
 	datasets="" }}
 {{	for ds in dataset[1]: }}
+
 	{{
 			d="""
 
 								  {
 								  	// nom du pays
-								    label: country,
+								    label: "%s",
 								    //data:  [0,1,3,9,11],
 								    data:  [%s],
-								    borderColor: "#3e95cd", // green
+								    borderColor: "%s", // green
 								    //pointBorderColor: "#fff",
 								    //backgroundColorHover: "#3e95cd",
 								    fill: true,
 								    borderDash: [2,4]
 								  },
-		""" % ds
+		""" % (str(rcountries.pop()), ds,colorset.pop())
 			datasets+=d
 	}}
 	{{pass}}
 
-}}
 
-{{=datasets}}
 <script>
 // script de génération des graphiques
 // déplacé ici pour faciliter la récupération des données d'entrées depuis le controleur

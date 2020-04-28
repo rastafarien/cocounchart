@@ -16,7 +16,7 @@ column_list_str={}
 countries=[]
 kriko=1
 country_values={}
-#session.countries_id=[]
+#session.selected_countries_id=[]
 
 
 def _init_log():
@@ -122,8 +122,8 @@ def compo_refresh_repo():
     session.countries=countries
 
     # reset current country list for charts 
-    session.countries_id=[session.countries.index(DEFAULT_COUNTRY)]
-    app_logging.info(session.countries_id)
+    session.selected_countries_id=[]
+    app_logging.info(session.selected_countries_id)
     #
     # creer la combo de selection du pays
     # 
@@ -176,13 +176,15 @@ def db_select_values(loc,lt='sc'):
         location=loc.replace("'","''")
         cur=con.execute(f"select * from t where Province='{location}' ")
     elif lt== 'mc':
-        app_logging.info("**** session.countries_id %s" % session.countries_id)
-        app_logging.info("**** session.countries %s" % session.countries[1:4])
+        #app_logging.info("**** session.selected_countries_id %s" % session.selected_countries_id)
+        #app_logging.info("**** session.countries %s" % session.countries[1:4])
 
-        #countries_clause=" or Country='".join([session.countries[x] for x in session.countries_id])
-        countries_clause=" or Country='".join([session.countries[x]+"'" for x in loc])
+        #countries_clause=" or Country='".join([session.countries[x] for x in session.selected_countries_id])
+        countries_clause=' or Country="'.join([session.countries[x]+'"' for x in loc])
         app_logging.info("CC %s" % countries_clause)
-        cur=con.execute(f"select * from t where Country='{countries_clause} and Province='' ")
+        cur=con.execute(f'select * from t where (Country="{countries_clause} ) and Province="" ')
+        #cur=con.execute(f"select * from t where (Country='France' or Country='Denmark') and Province='' ")
+        
     elif lt=='mp':
         pass
     else:
@@ -190,7 +192,7 @@ def db_select_values(loc,lt='sc'):
 
     # ignore les 4 premieres colonnes    
     rs= [ x[4:] for x in cur.fetchall() ]
-    app_logging.info('rs: %s'%rs)
+    #app_logging.info('rs: %s'%rs)
 
 
     res=[]
@@ -208,32 +210,49 @@ def db_select_values(loc,lt='sc'):
 
 
     #values=str([int(s) for s in res]).replace("]","").replace("[","").replace(' ','')
-    app_logging.info('res: %s'%len(res))
+    app_logging.info('**************res: %s'%len(res))
     return res
+
+
+def compo_del_country(): 
+    # retire le dernker pays a la liste
+
+    sc=session.selected_countries_id
+    if sc: sc.pop()
+
+
+    return dict(sc=sc)  
+
+
 
 def compo_add_country(): 
     # ajoute un pays a la liste
 
-    sc=int(request.args[0])
-    sc_name=session.countries[sc]
+    cc=int(request.args[0])
+    cc_name=session.countries[cc]
 
-    # si pas deja present
-    if sc not in session.countries_id: session.countries_id.append(sc)
+    # l'ajoute accumulateur si pas deja present
+    if cc not in session.selected_countries_id: session.selected_countries_id.append(cc)
 
-    return dict(sc=sc)
+    return dict(cc=cc)  
 
 def compo_get_array_dataset():
-    # envoie les données pour le pays selectionné
-    # global countries
+    # recupère la valeur combo
+    # recupère les données des pays : sélectionnés + combo
+    # pour les renvoyer au grapheur
     # app_logging.info("len %s"%len(request.args))
 
     app_logging.info("en entree session.selected_coutries *** %s" % session.selected_countries_id)
-    sc=int(request.args[0]) if len(request.args) else session.countries.index(DEFAULT_COUNTRY)
-    if session.selected_coutries_id is None: session.selected_countries_id=[sc]
+    # combo ou défaut (apres chargmement init)
+    cc=int(request.args[0]) if len(request.args) else session.countries.index(DEFAULT_COUNTRY)
+    # scope =  combo + selected
+    countries=session.selected_countries_id.copy() # on copie la liste origine pour pas la modifier
+    countries.append(cc)
+
+    #if session.selected_coutries_id is None: session.selected_countries_id=[cc]
 
 
-
-    app_logging.info("selected_country %s"%sc)
+    app_logging.info("selected_country %s"%cc)
 
     #countries=db_select_countries()
     #selected_country=session.countries[selected_country_id
@@ -241,8 +260,8 @@ def compo_get_array_dataset():
 
     # graph datas
     xdataset=session.column_list_str
-    app_logging.info("session.selected_coutries *** %s" % session.selected_countries_id)
-    ydataset=db_select_values(session.selected_countries_id,'mc')
+    app_logging.info("je cherche comme coutries *** %s" % countries)
+    ydataset=db_select_values(countries,'mc')
     #=["1,2,20,30,10,20","1,2,4,5,7,10"]
     # passe de '2','3',.. a '2,3,4..'
     
@@ -260,7 +279,9 @@ def compo_get_array_dataset():
     #xdataset=xdattr
     #ydataset="1,2,4,5,7,10"
     #ydataset="0,1,3,5,7"
-    return dict(selected_country="Italy",dataset=(xdataset,ydataset))
+    selected_countries=[ session.countries[i] for i in countries]
+    app_logging.info('les pay sont %s' % selected_countries)
+    return dict(selected_countries=selected_countries,dataset=(xdataset,ydataset))
 
 def compo_refreshed_data():
     # refresh datas with git pull
