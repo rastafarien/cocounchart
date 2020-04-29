@@ -241,10 +241,13 @@ def compo_get_array_dataset():
     # recupère les données des pays : sélectionnés + combo
     # pour les renvoyer au grapheur
     # app_logging.info("len %s"%len(request.args))
+    session.current_country_id= session.selected_countries_id[-1] if len(session.selected_countries_id) else session.countries.index(DEFAULT_COUNTRY)
 
-    app_logging.info("en entree session.selected_coutries *** %s" % session.selected_countries_id)
+    app_logging.info("en entree session.selected_coutries *** %s" % session.current_country_id)
     # combo ou défaut (apres chargmement init)
-    cc=int(request.args[0]) if len(request.args) else session.countries.index(DEFAULT_COUNTRY)
+    #cc=int(request.args[0]) if len(request.args) else session.countries.index(DEFAULT_COUNTRY) 
+    cc=int(request.args[0]) if len(request.args) else session.current_country_id
+    #
     # scope =  combo + selected
     countries=session.selected_countries_id.copy() # on copie la liste origine pour pas la modifier
     countries.append(cc)

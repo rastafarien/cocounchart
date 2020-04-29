@@ -1,2 +1,2 @@
 
-{{=LOAD('default', 'compo_get_array_dataset.load','53', ajax=True)}}
+{{=LOAD('default', 'compo_get_array_dataset.load', ajax=True)}}
